@@ -2,7 +2,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode';
 import createComponent from './lib/templates/createComponent';
-import createCssModule from './lib/templates/createCssModule';
+import createCSSModule from './lib/templates/createCSSModule';
+import createIndex from './lib/templates/createIndex';
 import * as validate from './lib/validate';
 
 
@@ -21,25 +22,30 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (!componentName) return
 
 		const rawOptions = await vscode.window.showQuickPick([{ label: "css module", value: 'cssModule' }], { canPickMany: true, placeHolder: 'Select options', })
-		const pathFolderComponent = path.join(currPath, componentName)
+		const componentPath = path.join(currPath, componentName)
 		const options = {
 			cssModule: rawOptions ? !!rawOptions[0] : false
 		}
 
-		fs.mkdirSync(pathFolderComponent)
+		fs.mkdirSync(componentPath)
 		//create component file
 		fs.writeFileSync(
-			path.join(pathFolderComponent, componentName + '.tsx'),
+			path.join(componentPath, componentName + '.tsx'),
 			createComponent({
 				name: componentName,
 				cssModule: options.cssModule
 			})
 		)
+		//create index file
+		fs.writeFileSync(
+			path.join(componentPath, 'index.ts'),
+			createIndex(componentName)
+		)
 		//create css file
 		if (options.cssModule)
 			fs.writeFileSync(
-				path.join(pathFolderComponent, componentName + '.module.css'),
-				createCssModule({
+				path.join(componentPath, componentName + '.module.css'),
+				createCSSModule({
 					name: componentName,
 				})
 			)

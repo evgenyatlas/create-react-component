@@ -1,4 +1,4 @@
-export default function createCssModule({ name }: { name: string }) {
+export default function createCSSModule({ name }: { name: string }) {
     return `
 .${name} {
 
